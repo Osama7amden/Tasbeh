@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>سبحة - تسبيح ذكي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet" />
+    <style>
+        /* ========== RESET & BASE ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', 'Amiri', serif;
+            background: #f6f1e7;
+            background-image: radial-gradient(circle at 10% 20%, rgba(26, 74, 58, 0.04) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(212, 175, 55, 0.06) 0%, transparent 50%);
+            min-height: 100vh;
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            transition: background 0.4s ease, color 0.4s ease;
+        }
+
+        body.dark-mode {
+            background: #121212;
+            background-image: radial-gradient(circle at 10% 20%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(26, 74, 58, 0.08) 0%, transparent 50%);
+        }
+
+        body.dark-mode .container {
+            background: rgba(28, 28, 28, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(212, 175, 55, 0.15);
+        }
+
+        body.dark-mode .header h1 {
+            color: #f0e6d3;
+        }
+        body.dark-mode .header h1 span {
+            color: #d4af37;
+        }
+        body.dark-mode .header p {
+            color: #b0a898;
+        }
+        body.dark-mode .month-badge {
+            background: #2a2a2a;
+            color: #d4af37;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        body.dark-mode .counter-card {
+            background: #252525;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(212, 175, 55, 0.08);
+        }
+        body.dark-mode .counter-card::before {
+            opacity: 0.5;
+        }
+        body.dark-mode .dhikr-btn {
+            color: #f0e6d3;
+        }
+        body.dark-mode .count-display .count-num {
+            color: #f0e6d3;
+        }
+        body.dark-mode .card-footer .stat-item .value {
+            color: #f0e6d3;
+        }
+        body.dark-mode .card-footer .stat-item .label {
+            color: #8a8a8a;
+        }
+        body.dark-mode .progress-wrap {
+            background: #3a3a3a;
+        }
+        body.dark-mode .monthly-item {
+            background: rgba(40, 40, 40, 0.7);
+            border-color: rgba(212, 175, 55, 0.1);
+        }
+        body.dark-mode .monthly-item .label {
+            color: #f0e6d3;
+        }
+        body.dark-mode .monthly-item .sub {
+            color: #8a8a8a;
+        }
+        body.dark-mode .history-table-wrap {
+            background: rgba(40, 40, 40, 0.6);
+            border-color: rgba(212, 175, 55, 0.05);
+        }
+        body.dark-mode .history-table th {
+            color: #b0a898;
+            border-bottom-color: rgba(212, 175, 55, 0.1);
+        }
+        body.dark-mode .history-table td {
+            color: #e0d6c8;
+            border-bottom-color: rgba(255, 255, 255, 0.04);
+        }
+        body.dark-mode .history-table .month-label {
+            color: #d4af37;
+        }
+        body.dark-mode .history-toggle {
+            color: #b0a898;
+            border-color: rgba(212, 175, 55, 0.15);
+        }
+        body.dark-mode .history-toggle:hover {
+            background: rgba(212, 175, 55, 0.08);
+            color: #d4af37;
+        }
+        body.dark-mode .reset-btn {
+            background: rgba(255, 255, 255, 0.04);
+            color: #b0a898;
+        }
+        body.dark-mode .reset-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #f0e6d3;
+        }
+        body.dark-mode .reset-btn.danger {
+            background: rgba(180, 60, 50, 0.15);
+            color: #c97a6a;
+        }
+        body.dark-mode .reset-btn.danger:hover {
+            background: rgba(180, 60, 50, 0.25);
+            color: #e08a7a;
+        }
+        body.dark-mode .toast {
+            background: #2a2a2a;
+            color: #f0e6d3;
+            border-color: #d4af37;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+        }
+        body.dark-mode .no-history {
+            color: #8a8a8a;
+        }
+        body.dark-mode .date-badge {
+            background: #1e1e1e;
+            color: #b0a898;
+            border-color: #3a3a3a;
+        }
+        body.dark-mode .stars-container .star {
+            color: #d4af37;
+        }
+
+        /* ========== CONTAINER ========== */
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.80);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 48px 48px 32px 32px;
+            box-shadow: 0 20px 60px rgba(26, 74, 58, 0.12), 0 0 0 1px rgba(212, 175, 55, 0.10);
+            padding: 24px 28px 36px;
+            position: relative;
+            overflow: hidden;
+            transition: background 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        /* ========== HEADER ========== */
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 0 16px;
+            position: relative;
+            z-index: 1;
+            gap: 12px;
+            border-bottom: 2px dashed rgba(212, 175, 55, 0.15);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .header-icon {
+            font-size: 32px;
+        }
+
+        .header-title h1 {
+            font-family: 'Amiri', serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a4a3a;
+            letter-spacing: 1px;
+            line-height: 1.2;
+        }
+        .header-title h1 span {
+            color: #d4af37;
+        }
+        .header-title p {
+            color: #5a7a6a;
+            font-size: 13px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .date-badge {
+            background: rgba(26, 74, 58, 0.04);
+            padding: 6px 16px;
+            border-radius: 40px;
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            font-size: 13px;
+            color: #1a4a3a;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .date-badge .hijri {
+            color: #d4af37;
+            font-weight: 700;
+        }
+        .date-badge .miladi {
+            color: #5a7a6a;
+        }
+
+        .dark-toggle {
+            background: rgba(26, 74, 58, 0.06);
+            border: none;
+            border-radius: 40px;
+            padding: 6px 16px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #1a4a3a;
+            border: 1px solid transparent;
+        }
+        .dark-toggle:hover {
+            background: rgba(212, 175, 55, 0.10);
+            border-color: rgba(212, 175, 55, 0.2);
+        }
+        body.dark-mode .dark-toggle {
+            background: rgba(212, 175, 55, 0.08);
+            color: #d4af37;
+            border-color: rgba(212, 175, 55, 0.1);
+        }
+        body.dark-mode .dark-toggle:hover {
+            background: rgba(212, 175, 55, 0.15);
+        }
+
+        /* ========== COUNTER GRID ========== */
+        .counter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+            margin: 24px 0 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ========== COUNTER CARD ========== */
+        .counter-card {
+            background: #ffffff;
+            border-radius: 28px;
+            padding: 18px 14px 18px;
+            box-shadow: 0 6px 24px rgba(26, 74, 58, 0.06), 0 0 0 1px rgba(212, 175, 55, 0.08);
+            transition: transform 0.25s ease, box-shadow 0.3s ease, background 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .counter-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 36px rgba(26, 74, 58, 0.10), 0 0 0 1px rgba(212, 175, 55, 0.15);
+        }
+        .counter-card:active {
+            transform: scale(0.97);
+        }
+
+        .counter-card .card-accent {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            flex-shrink: 0;
+            transition: background 0.3s ease;
+            pointer-events: none;
+        }
+
+        .dhikr-btn {
+            font-family: 'Amiri', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a4a3a;
+            background: transparent;
+            border: none;
+            padding: 4px 6px 2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            letter-spacing: 0.5px;
+            line-height: 1.4;
+            word-break: break-word;
+            pointer-events: none; /* we handle click on card */
+        }
+
+        .dhikr-btn::after {
+            content: '';
+            display: block;
+            width: 30px;
+            height: 2px;
+            background: #d4af37;
+            margin: 4px auto 0;
+            border-radius: 4px;
+            opacity: 0.2;
+            transition: width 0.3s ease, opacity 0.3s ease;
+        }
+        .dhikr-btn:hover::after {
+            width: 60px;
+            opacity: 0.7;
+        }
+
+        .count-display {
+            font-family: 'Amiri', serif;
+            font-size: 44px;
+            font-weight: 700;
+            line-height: 1.1;
+            margin: 2px 0 0;
+            transition: transform 0.2s ease;
+            min-height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            flex-wrap: wrap;
+            pointer-events: none;
+        }
+        .count-display .count-num {
+            transition: color 0.5s ease;
+        }
+
+        .stars-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2px;
+            margin-top: 2px;
+            min-height: 24px;
+            pointer-events: none;
+        }
+        .stars-container .star {
+            font-size: 16px;
+            color: #d4af37;
+            transition: color 0.3s ease;
+        }
+        .stars-container .star.empty {
+            opacity: 0.2;
+            color: #ccc;
+        }
+
+        .goal-badge {
+            display: none;
+            background: linear-gradient(135deg, #d4af37, #b8962e);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 40px;
+            vertical-align: middle;
+            animation: fadeInUp 0.5s ease;
+            pointer-events: none;
+        }
+        .goal-badge.show {
+            display: inline-block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .progress-wrap {
+            width: 100%;
+            height: 4px;
+            background: #e9e3d8;
+            border-radius: 10px;
+            margin: 6px 0 10px;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            border-radius: 10px;
+            transition: width 0.4s ease, background 0.6s ease;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 4px;
+            font-size: 12px;
+            color: #5a7a6a;
+            border-top: 1px solid rgba(26, 74, 58, 0.05);
+            padding-top: 8px;
+            gap: 4px;
+            pointer-events: none;
+        }
+        .card-footer .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+        .card-footer .stat-item .label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            opacity: 0.5;
+            font-weight: 600;
+        }
+        .card-footer .stat-item .value {
+            font-weight: 700;
+            font-size: 16px;
+            color: #1a4a3a;
+            font-family: 'Amiri', serif;
+            transition: color 0.3s ease;
+        }
+
+        /* ========== MONTHLY STATS ========== */
+        .monthly-section {
+            margin-top: 22px;
+            padding-top: 18px;
+            border-top: 2px dashed rgba(212, 175, 55, 0.20);
+            position: relative;
+            z-index: 1;
+        }
+
+        .monthly-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a4a3a;
+            margin-bottom: 14px;
+        }
+        .monthly-title::before,
+        .monthly-title::after {
+            content: '';
+            flex: 1;
+            max-width: 40px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #d4af37);
+        }
+        .monthly-title::after {
+            background: linear-gradient(90deg, #d4af37, transparent);
+        }
+        body.dark-mode .monthly-title {
+            color: #f0e6d3;
+        }
+
+        .monthly-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        .monthly-item {
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 16px;
+            padding: 12px 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(26, 74, 58, 0.04);
+            border: 1px solid rgba(212, 175, 55, 0.06);
+            transition: transform 0.2s ease, background 0.3s ease;
+        }
+        .monthly-item:hover {
+            transform: translateY(-2px);
+        }
+        .monthly-item .label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a4a3a;
+            font-family: 'Amiri', serif;
+        }
+        .monthly-item .count {
+            font-size: 24px;
+            font-weight: 700;
+            color: #d4af37;
+            font-family: 'Amiri', serif;
+            display: block;
+            margin-top: 2px;
+        }
+        .monthly-item .count.zero {
+            color: #b0a898;
+        }
+        .monthly-item .sub {
+            font-size: 10px;
+            color: #8a9a8a;
+            margin-top: 2px;
+        }
+        body.dark-mode .monthly-item .count.zero {
+            color: #5a5a5a;
+        }
+
+        /* ========== HISTORY ========== */
+        .history-toggle {
+            display: inline-block;
+            margin-top: 14px;
+            padding: 6px 22px;
+            background: transparent;
+            border: 1px solid rgba(212, 175, 55, 0.20);
+            border-radius: 40px;
+            color: #5a7a6a;
+            font-family: 'Cairo', sans-serif;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+        .history-toggle:hover {
+            background: rgba(212, 175, 55, 0.06);
+            border-color: #d4af37;
+            color: #1a4a3a;
+        }
+
+        .history-panel {
+            margin-top: 14px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease, opacity 0.4s ease, margin 0.3s ease;
+            opacity: 0;
+        }
+        .history-panel.open {
+            max-height: 900px;
+            opacity: 1;
+            margin-top: 14px;
+        }
+
+        .history-table-wrap {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 16px;
+            padding: 8px 4px;
+            border: 1px solid rgba(212, 175, 55, 0.06);
+            overflow-x: auto;
+            transition: background 0.3s ease;
+        }
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 500px;
+        }
+        .history-table th {
+            padding: 8px 6px;
+            color: #5a7a6a;
+            font-weight: 600;
+            font-size: 12px;
+            border-bottom: 2px solid rgba(26, 74, 58, 0.06);
+            text-align: center;
+        }
+        .history-table td {
+            padding: 6px 6px;
+            text-align: center;
+            border-bottom: 1px solid rgba(26, 74, 58, 0.03);
+            color: #1a4a3a;
+            font-weight: 500;
+        }
+        .history-table .month-label {
+            font-weight: 600;
+            color: #1a4a3a;
+            font-size: 13px;
+        }
+        .history-table .h-count {
+            font-family: 'Amiri', serif;
+            font-weight: 700;
+            color: #d4af37;
+        }
+        .history-table .h-count.zero {
+            color: #b0a898;
+        }
+        .no-history {
+            color: #8a9a8a;
+            font-size: 14px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* ========== RESET ========== */
+        .reset-area {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+        .reset-btn {
+            padding: 6px 24px;
+            border: none;
+            border-radius: 40px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            background: rgba(26, 74, 58, 0.05);
+            color: #5a7a6a;
+        }
+        .reset-btn:hover {
+            background: rgba(26, 74, 58, 0.10);
+            color: #1a4a3a;
+        }
+        .reset-btn.danger {
+            background: rgba(180, 60, 50, 0.06);
+            color: #9a5a4a;
+        }
+        .reset-btn.danger:hover {
+            background: rgba(180, 60, 50, 0.14);
+            color: #7a3a2a;
+        }
+
+        /* ========== TOAST ========== */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #1a4a3a;
+            color: #f6f1e7;
+            padding: 10px 28px;
+            border-radius: 50px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 8px 32px rgba(26, 74, 58, 0.20);
+            opacity: 0;
+            transition: all 0.5s ease;
+            pointer-events: none;
+            z-index: 999;
+            border: 1px solid rgba(212, 175, 55, 0.10);
+            text-align: center;
+            max-width: 90vw;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px 14px 24px;
+                border-radius: 32px 32px 24px 24px;
+            }
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            .header-left {
+                justify-content: center;
+            }
+            .header-actions {
+                justify-content: center;
+            }
+            .header-title h1 {
+                font-size: 26px;
+                text-align: center;
+            }
+            .header-title p {
+                text-align: center;
+            }
+            .counter-grid {
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+                gap: 12px;
+            }
+            .dhikr-btn {
+                font-size: 17px;
+            }
+            .count-display {
+                font-size: 36px;
+                min-height: 46px;
+            }
+            .card-footer .stat-item .value {
+                font-size: 14px;
+            }
+            .date-badge {
+                font-size: 11px;
+                padding: 4px 12px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .counter-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .dhikr-btn {
+                font-size: 14px;
+            }
+            .count-display {
+                font-size: 28px;
+                min-height: 38px;
+            }
+            .card-footer .stat-item .value {
+                font-size: 12px;
+            }
+            .card-footer .stat-item .label {
+                font-size: 8px;
+            }
+            .card-accent {
+                width: 32px;
+                height: 32px;
+                font-size: 13px;
+            }
+            .monthly-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .history-table {
+                font-size: 11px;
+                min-width: 300px;
+            }
+            .history-table th,
+            .history-table td {
+                padding: 4px 3px;
+            }
+            .container {
+                padding: 12px 10px 18px;
+            }
+            .header-title h1 {
+                font-size: 22px;
+            }
+            .date-badge {
+                font-size: 10px;
+                gap: 4px;
+            }
+            .stars-container .star {
+                font-size: 12px;
+            }
+        }
+
+        /* ========== SCROLLBAR ========== */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f0ebe2;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c9b89a;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #b8a582;
+        }
+        body.dark-mode ::-webkit-scrollbar-track {
+            background: #2a2a2a;
+        }
+        body.dark-mode ::-webkit-scrollbar-thumb {
+            background: #4a4a4a;
+        }
+        body.dark-mode ::-webkit-scrollbar-thumb:hover {
+            background: #5a5a5a;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+        .mt-8 {
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== TOAST ===== -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ===== MAIN CONTAINER ===== -->
+    <div class="container">
+
+        <!-- ===== HEADER ===== -->
+        <header class="header">
+            <div class="header-left">
+                <span class="header-icon">☪</span>
+                <div class="header-title">
+                    <h1>سُبْحَة <span>·</span> تَسْبِيح</h1>
+                    <p>اذْكُرِ اللَّهَ وَسَبِّحْهُ</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div class="date-badge" id="dateBadge">
+                    <span class="hijri" id="hijriDate">--</span>
+                    <span style="opacity:0.3;">|</span>
+                    <span class="miladi" id="miladiDate">--</span>
+                </div>
+                <button class="dark-toggle" id="darkToggle" title="الوضع المظلم / الفاتح">
+                    <span id="darkIcon">🌙</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- ===== COUNTER GRID ===== -->
+        <div class="counter-grid" id="counterGrid">
+            <!-- Injected by JS -->
+        </div>
+
+        <!-- ===== MONTHLY STATS ===== -->
+        <section class="monthly-section">
+            <div class="monthly-title">
+                <span>📊</span> إِحْصَائِيَّاتُ الشَّهْرِ
+            </div>
+            <div class="monthly-grid" id="monthlyStats">
+                <!-- Injected by JS -->
+            </div>
+
+            <div class="text-center mt-8">
+                <button class="history-toggle" id="historyToggle">📜 السَّجِلَّاتُ السَّابِقَة</button>
+            </div>
+            <div class="history-panel" id="historyPanel">
+                <div class="history-table-wrap">
+                    <div id="historyContent"></div>
+                </div>
+            </div>
+
+            <div class="reset-area">
+                <button class="reset-btn" id="resetMonthBtn">🔄 إِعَادَةُ الشَّهْرِ</button>
+                <button class="reset-btn danger" id="resetAllBtn">🗑️ إِعَادَةُ الكُلِّ</button>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // ============================================================
+        //  DHIKR ITEMS (9 total)
+        // ============================================================
+        const DHIKR_ITEMS = [
+            { id: 'subhanallah', label: 'سُبْحَانَ اللَّهِ', icon: '🕌', accent: '#1a4a3a' },
+            { id: 'alhamdulillah', label: 'الْحَمْدُ لِلَّهِ', icon: '🌿', accent: '#2d6b4e' },
+            { id: 'allahuakbar', label: 'اللَّهُ أَكْبَرُ', icon: '✨', accent: '#d4af37' },
+            { id: 'lailahaillallah', label: 'لَا إِلَٰهَ إِلَّا اللَّهُ', icon: '🌟', accent: '#8b6b2a' },
+            { id: 'subhanallah_wabihamdih', label: 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ', icon: '🌹', accent: '#6A4C93' },
+            { id: 'subhanallah_azeem', label: 'سُبْحَانَ اللَّهِ الْعَظِيمِ', icon: '☁️', accent: '#2B2D42' },
+            { id: 'la_hawla', label: 'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ', icon: '💪', accent: '#E07A5F' },
+            { id: 'astaghfirullah', label: 'أَسْتَغْفِرُ اللَّهَ الْعَظِيمَ', icon: '💧', accent: '#3D5A80' },
+            { id: 'salawat', label: 'صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى نَبِيِّنَا مُحَمَّدٍ', icon: '🌙', accent: '#B5835A' }
+        ];
+
+        const STORAGE_KEY = 'tasbih_data_v10';
+        const GOAL = 33;
+
+        // ============================================================
+        //  STATE
+        // ============================================================
+        let state = null;
+        let currentMonthKey = '';
+
+        // ============================================================
+        //  HELPERS
+        // ============================================================
+        function getMonthKey() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+        }
+
+        function getMonthLabel(key) {
+            const [y, m] = key.split('-').map(Number);
+            const months = ['يَنَايِر', 'فِبْرَايِر', 'مَارِس', 'أَبْرِيل', 'مَايُو', 'يُونِيُو',
+                'يُولِيُو', 'أُغُسْطُس', 'سِبْتَمْبِر', 'أُكْتُوبِر', 'نُوفِمْبِر', 'دِيسِمْبِر'
+            ];
+            return `${months[m-1]} ${y}`;
+        }
+
+        function getIslamicDate() {
+            try {
+                const d = new Date();
+                const formatter = new Intl.DateTimeFormat('ar-SA', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    calendar: 'islamic'
+                });
+                return formatter.format(d);
+            } catch (_) {
+                return '--';
+            }
+        }
+
+        function getMiladiDate() {
+            const d = new Date();
+            return d.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        function defaultState() {
+            const obj = {};
+            DHIKR_ITEMS.forEach(item => {
+                obj[item.id] = {
+                    total: 0,
+                    monthly: 0,
+                    month: getMonthKey(),
+                    history: {}
+                };
+            });
+            return obj;
+        }
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    let needsUpdate = false;
+                    DHIKR_ITEMS.forEach(item => {
+                        if (!parsed[item.id]) {
+                            parsed[item.id] = { total: 0, monthly: 0, month: getMonthKey(), history: {} };
+                            needsUpdate = true;
+                        }
+                        if (typeof parsed[item.id].history !== 'object' || Array.isArray(parsed[item.id].history)) {
+                            parsed[item.id].history = {};
+                            needsUpdate = true;
+                        }
+                        if (!parsed[item.id].month) {
+                            parsed[item.id].month = getMonthKey();
+                            needsUpdate = true;
+                        }
+                    });
+                    if (needsUpdate) {
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+                    }
+                    return parsed;
+                }
+            } catch (_) { /* ignore */ }
+            const fresh = defaultState();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(fresh));
+            return fresh;
+        }
+
+        function saveState() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        }
+
+        // ============================================================
+        //  CORE LOGIC
+        // ============================================================
+        function ensureMonth(itemId) {
+            const entry = state[itemId];
+            const current = getMonthKey();
+            if (entry.month !== current) {
+                if (entry.monthly > 0) {
+                    const oldMonth = entry.month;
+                    entry.history[oldMonth] = (entry.history[oldMonth] || 0) + entry.monthly;
+                }
+                entry.month = current;
+                entry.monthly = 0;
+                saveState();
+            }
+            return current;
+        }
+
+        function incrementCounter(itemId) {
+            const entry = state[itemId];
+            const current = ensureMonth(itemId);
+            const oldTotal = entry.total;
+            entry.total += 1;
+            entry.monthly += 1;
+            saveState();
+
+            const newTotal = entry.total;
+            const crossed = Math.floor(newTotal / GOAL) > Math.floor(oldTotal / GOAL);
+            return {
+                total: newTotal,
+                monthly: entry.monthly,
+                stars: Math.floor(newTotal / GOAL),
+                crossed: crossed
+            };
+        }
+
+        function resetMonth() {
+            const current = getMonthKey();
+            DHIKR_ITEMS.forEach(item => {
+                const entry = state[item.id];
+                if (entry.monthly > 0) {
+                    entry.history[entry.month] = (entry.history[entry.month] || 0) + entry.monthly;
+                }
+                entry.month = current;
+                entry.monthly = 0;
+            });
+            saveState();
+            renderAll();
+            showToast('✅ تمَّ إِعَادَةُ إِحْصَائِيَّاتِ الشَّهْرِ');
+        }
+
+        function resetAll() {
+            if (!confirm('⚠️ هَلْ أَنْتَ مُتَأَكِّدٌ مِنْ إِعَادَةِ كُلِّ التَّسْبِيحَاتِ؟')) return;
+            state = defaultState();
+            const current = getMonthKey();
+            DHIKR_ITEMS.forEach(item => {
+                state[item.id].month = current;
+            });
+            saveState();
+            renderAll();
+            showToast('🗑️ تمَّ إِعَادَةُ كُلِّ التَّسْبِيحَاتِ');
+        }
+
+        // ============================================================
+        //  RENDER
+        // ============================================================
+        function renderAll() {
+            renderCounters();
+            renderMonthlyStats();
+            renderHistory();
+            updateDates();
+        }
+
+        // Generate a color based on number of stars (multiples of 33)
+        function getStarColor(starCount) {
+            const colors = [
+                '#d4af37', // gold
+                '#2A9D8F', // teal
+                '#E76F51', // coral
+                '#6A4C93', // purple
+                '#3D5A80', // navy
+                '#F4A261', // orange
+                '#2B2D42', // dark
+                '#B5835A', // brown
+                '#E5989B', // pink
+                '#5BC0EB', // light blue
+            ];
+            return colors[starCount % colors.length];
+        }
+
+        function renderCounters() {
+            const grid = document.getElementById('counterGrid');
+            grid.innerHTML = '';
+            DHIKR_ITEMS.forEach((item, idx) => {
+                const entry = state[item.id];
+                const total = entry.total || 0;
+                const monthly = entry.monthly || 0;
+                const stars = Math.floor(total / GOAL);
+                const remainder = total % GOAL;
+                const progress = (remainder / GOAL) * 100;
+                const currentColor = getStarColor(stars);
+
+                const card = document.createElement('div');
+                card.className = 'counter-card';
+                // Click on card triggers increment
+                card.addEventListener('click', (e) => {
+                    // prevent if click on interactive elements inside (buttons, etc) but there are none except card itself
+                    // لكن قد يكون هناك أزرار داخلية في المستقبل، نمنع التداخل
+                    if (e.target.closest('.reset-btn') || e.target.closest('.history-toggle') || e.target.closest(
+                            '.dark-toggle')) return;
+                    const result = incrementCounter(item.id);
+                    renderAll();
+                    if (navigator.vibrate) navigator.vibrate(10);
+                    if (result.crossed) {
+                        showToast(`🌟 «${item.label}»  بَلَغَتْ ${result.stars * GOAL}! (⭐ ${result.stars})`);
+                    }
+                });
+
+                const accent = document.createElement('div');
+                accent.className = 'card-accent';
+                accent.style.background = item.accent;
+                accent.textContent = idx + 1;
+
+                const btn = document.createElement('button');
+                btn.className = 'dhikr-btn';
+                btn.textContent = item.label;
+                // no click handler here, card handles it
+
+                const countWrap = document.createElement('div');
+                countWrap.className = 'count-display';
+
+                const numSpan = document.createElement('span');
+                numSpan.className = 'count-num';
+                numSpan.textContent = total;
+                numSpan.style.color = currentColor;
+
+                // Stars
+                const starContainer = document.createElement('div');
+                starContainer.className = 'stars-container';
+                const maxDisplay = 10;
+                let starHtml = '';
+                if (stars > 0) {
+                    const showStars = Math.min(stars, maxDisplay);
+                    for (let i = 0; i < showStars; i++) {
+                        starHtml += `<span class="star">⭐</span>`;
+                    }
+                    if (stars > maxDisplay) {
+                        starHtml += `<span class="star" style="font-size:14px;opacity:0.6;">+${stars - maxDisplay}</span>`;
+                    }
+                } else {
+                    starHtml = `<span class="star empty">☆</span>`;
+                }
+                starContainer.innerHTML = starHtml;
+
+                countWrap.appendChild(numSpan);
+                const badge = document.createElement('span');
+                badge.className = `goal-badge ${(remainder === 0 && total > 0) ? 'show' : ''}`;
+                badge.textContent = `⭐ ${stars}`;
+                countWrap.appendChild(badge);
+                countWrap.appendChild(starContainer);
+
+                const progWrap = document.createElement('div');
+                progWrap.className = 'progress-wrap';
+                const progBar = document.createElement('div');
+                progBar.className = 'progress-bar';
+                progBar.style.width = progress + '%';
+                progBar.style.background = `linear-gradient(90deg, ${currentColor}, ${currentColor}cc)`;
+                progWrap.appendChild(progBar);
+
+                const footer = document.createElement('div');
+                footer.className = 'card-footer';
+                footer.innerHTML = `
+                    <div class="stat-item">
+                        <span class="label">هَذَا الشَّهْرِ</span>
+                        <span class="value">${monthly}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="label">المَجْمُوع</span>
+                        <span class="value">${total}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="label">⭐</span>
+                        <span class="value">${stars}</span>
+                    </div>
+                `;
+
+                card.appendChild(accent);
+                card.appendChild(btn);
+                card.appendChild(countWrap);
+                card.appendChild(progWrap);
+                card.appendChild(footer);
+                grid.appendChild(card);
+            });
+        }
+
+        function renderMonthlyStats() {
+            const container = document.getElementById('monthlyStats');
+            container.innerHTML = '';
+            const current = getMonthKey();
+            DHIKR_ITEMS.forEach(item => {
+                const entry = state[item.id];
+                if (entry.month !== current) {
+                    ensureMonth(item.id);
+                }
+                const monthly = entry.monthly || 0;
+                const div = document.createElement('div');
+                div.className = 'monthly-item';
+                div.innerHTML = `
+                    <div class="label">${item.icon} ${item.label}</div>
+                    <span class="count ${monthly === 0 ? 'zero' : ''}">${monthly}</span>
+                    <div class="sub">هَذَا الشَّهْرِ</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('historyContent');
+            const monthSet = new Set();
+            DHIKR_ITEMS.forEach(item => {
+                const entry = state[item.id];
+                Object.keys(entry.history).forEach(m => monthSet.add(m));
+                if (entry.monthly > 0) {
+                    monthSet.add(entry.month);
+                }
+            });
+            const months = Array.from(monthSet).sort().reverse();
+
+            if (months.length === 0) {
+                container.innerHTML = `<div class="no-history">📭 لَا تَسْجِيلَاتٌ بَعْدُ</div>`;
+                return;
+            }
+
+            let html = `
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>الشَّهْرُ</th>
+                            ${DHIKR_ITEMS.map(item => `<th>${item.icon}</th>`).join('')}
+                            <th>المَجْمُوع</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            months.forEach(month => {
+                let totalMonth = 0;
+                const row = [];
+                DHIKR_ITEMS.forEach(item => {
+                    const entry = state[item.id];
+                    let count = 0;
+                    if (month === entry.month && entry.monthly > 0) {
+                        count = entry.monthly;
+                    } else if (entry.history[month]) {
+                        count = entry.history[month];
+                    }
+                    totalMonth += count;
+                    row.push(count);
+                });
+
+                html += `<tr>
+                    <td class="month-label">${getMonthLabel(month)}</td>
+                    ${row.map(c => `<td class="h-count ${c === 0 ? 'zero' : ''}">${c}</td>`).join('')}
+                    <td class="h-count" style="color:#1a4a3a;font-weight:700;">${totalMonth}</td>
+                </tr>`;
+            });
+
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+            if (document.body.classList.contains('dark-mode')) {
+                const totals = container.querySelectorAll('.h-count:last-child');
+                totals.forEach(el => el.style.color = '#d4af37');
+            }
+        }
+
+        function updateDates() {
+            document.getElementById('hijriDate').textContent = getIslamicDate();
+            document.getElementById('miladiDate').textContent = getMiladiDate();
+        }
+
+        // ============================================================
+        //  TOAST
+        // ============================================================
+        let toastTimer = null;
+
+        function showToast(msg) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                el.classList.remove('show');
+            }, 2800);
+        }
+
+        // ============================================================
+        //  DARK MODE
+        // ============================================================
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('darkIcon').textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('tasbih_dark_mode', isDark ? 'dark' : 'light');
+            renderHistory();
+        }
+
+        function loadDarkMode() {
+            const saved = localStorage.getItem('tasbih_dark_mode');
+            if (saved === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('darkIcon').textContent = '☀️';
+            } else {
+                document.body.classList.remove('dark-mode');
+                document.getElementById('darkIcon').textContent = '🌙';
+            }
+        }
+
+        // ============================================================
+        //  HISTORY TOGGLE
+        // ============================================================
+        document.getElementById('historyToggle').addEventListener('click', function() {
+            const panel = document.getElementById('historyPanel');
+            panel.classList.toggle('open');
+            this.textContent = panel.classList.contains('open') ? '📜 إِخْفَاءُ السَّجِلَّاتِ' : '📜 السَّجِلَّاتُ السَّابِقَة';
+            if (panel.classList.contains('open')) {
+                renderHistory();
+            }
+        });
+
+        // ============================================================
+        //  EVENT BINDINGS
+        // ============================================================
+        document.getElementById('resetMonthBtn').addEventListener('click', resetMonth);
+        document.getElementById('resetAllBtn').addEventListener('click', resetAll);
+        document.getElementById('darkToggle').addEventListener('click', toggleDarkMode);
+
+        // ============================================================
+        //  INIT
+        // ============================================================
+        state = loadState();
+        const current = getMonthKey();
+        DHIKR_ITEMS.forEach(item => {
+            const entry = state[item.id];
+            if (entry.month !== current && entry.monthly > 0) {
+                entry.history[entry.month] = (entry.history[entry.month] || 0) + entry.monthly;
+                entry.month = current;
+                entry.monthly = 0;
+            } else if (entry.month !== current) {
+                entry.month = current;
+            }
+        });
+        saveState();
+        loadDarkMode();
+        renderAll();
+        showToast('🌙 بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ');
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) saveState();
+        });
+    </script>
+
+</body>
+</html>
